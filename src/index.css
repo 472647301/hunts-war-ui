@@ -12,6 +12,7 @@ code {
     monospace;
 }
 .app {
+  width: 600px;
   max-width: 600px;
   margin: 0 auto;
 }
@@ -20,4 +21,28 @@ code {
 }
 .app .ant-form-item {
   margin-bottom: 5px;
+}
+#root .ant-form-item-label {
+  padding: 0 0 3px;
+}
+.footer {
+  height: 145px;
+  max-height: 145;
+  overflow: scroll;
+}
+.footer-text {
+  line-height: 24px;
+  margin-bottom: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.help-text {
+  text-align: center;
+}
+.help-desc {
+  cursor: pointer;
+}
+.help-desc:hover {
+  color: #1890ff;
 }
