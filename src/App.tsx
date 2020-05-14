@@ -3,30 +3,51 @@ import { Row, Col, PageHeader } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Form, Input, Button, Card } from "antd";
 import { Empty, message, Modal } from "antd";
+import Cookies from "js-cookie";
 
-class App extends React.Component {
-  public state: IState = {
-    logs: [],
-    startState: false,
-    DN_INSTALL_DIR: "",
-    JJC_ICON_LOCATION: "",
-    HUNT_MATCH_LOCATION: "",
-    HUNT_START_LOCATION: "",
-    HUNT_SURRENDDER_LOCATION: "",
-    HUNT_STOP_LOCATION: "",
-    CHARACTER_HEAD_COORDINATE: "",
-    ESC_SURRENDDER_LOCATION: "",
-    DROP_NOTICE_QQ: "",
-    OTHER: "",
-    visible: false,
-  };
+const OPTIONS: Array<ItemT> = [
+  "DN_INSTALL_DIR",
+  "JJC_ICON_LOCATION",
+  "HUNT_MATCH_LOCATION",
+  "HUNT_START_LOCATION",
+  "HUNT_SURRENDDER_LOCATION",
+  "HUNT_STOP_LOCATION",
+  "CHARACTER_HEAD_COORDINATE",
+  "ESC_SURRENDDER_LOCATION",
+  "DROP_NOTICE_QQ",
+  "OTHER",
+];
+class App extends React.Component<{}, IState> {
+  constructor(props: {}) {
+    super(props);
+    const Optinos: Partial<IState> = {};
+    OPTIONS.forEach((key) => {
+      const val = Cookies.get(key);
+      Optinos[key] = val;
+    });
+    this.state = {
+      logs: [],
+      runState: false,
+      DN_INSTALL_DIR: Optinos.DN_INSTALL_DIR || "",
+      JJC_ICON_LOCATION: Optinos.JJC_ICON_LOCATION || "",
+      HUNT_MATCH_LOCATION: Optinos.HUNT_MATCH_LOCATION || "",
+      HUNT_START_LOCATION: Optinos.HUNT_START_LOCATION || "",
+      HUNT_SURRENDDER_LOCATION: Optinos.HUNT_SURRENDDER_LOCATION || "",
+      HUNT_STOP_LOCATION: Optinos.HUNT_STOP_LOCATION || "",
+      CHARACTER_HEAD_COORDINATE: Optinos.CHARACTER_HEAD_COORDINATE || "",
+      ESC_SURRENDDER_LOCATION: Optinos.ESC_SURRENDDER_LOCATION || "",
+      DROP_NOTICE_QQ: Optinos.DROP_NOTICE_QQ || "",
+      OTHER: Optinos.OTHER || "",
+      visible: false,
+    };
+  }
 
   public onSubmit = () => {
     if (!window.NativeNotice) {
       return;
     }
     // 启动
-    if (!this.state.startState) {
+    if (!this.state.runState) {
       this.submitStart();
       return;
     }
@@ -140,11 +161,14 @@ class App extends React.Component {
 
   public onStart = () => {
     message.success("脚本已成功启动");
-    this.setState({ startState: true });
+    this.setState({ runState: true });
+    OPTIONS.forEach((key) => {
+      Cookies.set(key, this.state[key], { expires: 365 });
+    });
   };
 
   public onStop = () => {
-    this.setState({ startState: false });
+    this.setState({ runState: false });
   };
 
   public onVisible = () => {
@@ -170,7 +194,7 @@ class App extends React.Component {
   }
 
   public render() {
-    const { logs, startState } = this.state;
+    const { logs, runState } = this.state;
     return (
       <div className="app">
         <PageHeader
@@ -182,10 +206,10 @@ class App extends React.Component {
             <Button
               key="start"
               type={"primary"}
-              danger={startState}
+              danger={runState}
               onClick={this.onSubmit}
             >
-              {startState ? "停止脚本" : "启动脚本"}
+              {runState ? "停止脚本" : "启动脚本"}
             </Button>,
           ]}
         />
@@ -336,9 +360,10 @@ type INativeNotice = {
   on: (channel: string, callback: (...args: any[]) => void) => void;
   send: (channel: string, ...args: any[]) => void;
 };
+type ItemT = keyof Omit<IState, "logs" | "runState" | "visible">;
 type IState = {
   logs: Array<string>;
-  startState: boolean;
+  runState: boolean;
   /**
    * 龙之谷安装目录
    */
