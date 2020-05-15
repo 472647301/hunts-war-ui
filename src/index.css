@@ -64,7 +64,7 @@ code {
   background: #bbb;
 }
 
-*::-webkit-scrollbar-track {
-  /*滚动条内部轨道*/
+/**::-webkit-scrollbar-track {
+  滚动条内部轨道
   background: #ededed;
-}
+}*/
